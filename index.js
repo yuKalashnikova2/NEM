@@ -1,5 +1,13 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
+import mongoose from 'mongoose'
+
+mongoose
+  .connect(
+    'mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/?retryWrites=true&w=majority'
+  )
+  .then(() => console.log('DB ok'))
+  .catch((err) => console.log(err, 'DB err'))
 
 const app = express()
 
@@ -14,14 +22,14 @@ app.post('/login', (req, res) => {
 
   const token = jwt.sign(
     {
-        email: req.body.email,
-        fullName: 'Yuliya Kalashnikova'
+      email: req.body.email,
+      fullName: 'Yuliya Kalashnikova',
     },
     'secret123'
   )
   res.json({
     response: 'success',
-    token
+    token,
   })
 })
 
