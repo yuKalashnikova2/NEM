@@ -1,7 +1,8 @@
 import express from 'express'
-import { validationResult } from 'express-validator'
 import mongoose from 'mongoose'
+import { validationResult } from 'express-validator'
 import { registerValidator } from './validatios/auth.js'
+import UserModel from './models/User.js'
 
 mongoose
   .connect(
@@ -23,6 +24,13 @@ app.post('/auth/register', registerValidator, (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json(errors.array())
   }
+
+  const doc = new UserModel({
+    email: req.body.email,
+    fullName: req.body.email,
+    avatarUrl: req.body.avatarUrl,
+    passwordHash: req.body.passwordHash,
+  })
 
   res.json({
     success: true,
