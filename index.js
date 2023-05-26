@@ -1,5 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
+import bcrypt from 'bcrypt'
 import { validationResult } from 'express-validator'
 import { registerValidator } from './validatios/auth.js'
 import UserModel from './models/User.js'
@@ -19,22 +20,26 @@ app.get('/', (req, res) => {
   res.send('Hello World')
 })
 
-app.post('/auth/register', registerValidator, (req, res) => {
+app.post('/auth/register', registerValidator, async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).json(errors.array())
   }
 
+  const password = req.body.password
+  const salt = await bcrypt.genSalt(10)
+  const passwordHash = await bcrypt.hash(password, salt)
+
   const doc = new UserModel({
     email: req.body.email,
     fullName: req.body.email,
     avatarUrl: req.body.avatarUrl,
-    passwordHash: req.body.passwordHash,
+    passwordHash,
   })
 
-  res.json({
-    success: true,
-  })
+  const user = await doc.save()
+
+  res.json(user)
 })
 
 app.listen(65534, (err) => {
