@@ -7,7 +7,7 @@ import UserModel from './models/User.js'
 
 mongoose
   .connect(
-    'mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/?retryWrites=true&w=majority'
+    'mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/blog'
   )
   .then(() => console.log('DB ok'))
   .catch((err) => console.log(err, 'DB err'))
@@ -21,7 +21,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/auth/register', registerValidator, async (req, res) => {
-  const errors = validationResult(req)
+  try {
+    const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).json(errors.array())
   }
@@ -40,6 +41,12 @@ app.post('/auth/register', registerValidator, async (req, res) => {
   const user = await doc.save()
 
   res.json(user)
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'Не удалось зарегистрировать пользователя'
+    })
+  }
 })
 
 app.listen(65534, (err) => {
