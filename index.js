@@ -1,6 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import { registerValidator } from './validatios/auth.js'
+import { loginValidator, registerValidator, postCreateValidator } from './validatios/validation.js'
 import checkAuth from './utils/checkAuth.js'
 import * as UserController from './controller/UserController.js'
 
@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
   res.send('Домашняя страница')
 })
 
-app.post('/auth/login', UserController.login)
+app.post('/auth/login', loginValidator, UserController.login)
 app.post('/auth/register', registerValidator, UserController.register)
 
 app.get('/auth/me', checkAuth, UserController.getMe)
