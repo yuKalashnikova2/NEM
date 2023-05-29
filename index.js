@@ -1,8 +1,13 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import { loginValidator, registerValidator, postCreateValidator } from './validatios/validation.js'
+import {
+  loginValidator,
+  registerValidator,
+  postCreateValidator,
+} from './validatios/validation.js'
 import checkAuth from './utils/checkAuth.js'
 import * as UserController from './controller/UserController.js'
+import * as PostController from './controller/PostController.js'
 
 mongoose
   .connect('mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/blog')
@@ -19,8 +24,9 @@ app.get('/', (req, res) => {
 
 app.post('/auth/login', loginValidator, UserController.login)
 app.post('/auth/register', registerValidator, UserController.register)
-
 app.get('/auth/me', checkAuth, UserController.getMe)
+
+app.post('/posts', checkAuth, postCreateValidator, PostController.create)
 
 app.listen(65534, (err) => {
   if (err) {
