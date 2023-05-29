@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { validationResult } from 'express-validator'
 import { registerValidator } from './validatios/auth.js'
 import UserModel from './models/User.js'
+import checkAuth from './utils/checkAuth.js'
 
 mongoose
   .connect('mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/blog')
@@ -70,7 +71,7 @@ app.post('/auth/login', async (req, res) => {
       })
     }
 
-   const isValidPass = await bcrypt.compare(
+    const isValidPass = await bcrypt.compare(
       req.body.password,
       user._doc.passwordHash
     )
@@ -98,6 +99,26 @@ app.post('/auth/login', async (req, res) => {
     console.log(error)
     res.status(500).json({
       message: 'Не удалось авторизоваться',
+    })
+  }
+})
+
+app.get('/auth/me', checkAuth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId)
+
+    if (!user) {
+      return req.status(404).json({
+        message: 'Пользователь не найден',
+      })
+    }
+    const { passwordHash, ...userData } = user._doc
+
+    res.json(userData)
+  } catch (error) {
+    console.log(error)
+    res.status.json({
+      message: 'Нет доступа',
     })
   }
 })
