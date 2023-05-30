@@ -26,6 +26,8 @@ app.post('/auth/login', loginValidator, UserController.login)
 app.post('/auth/register', registerValidator, UserController.register)
 app.get('/auth/me', checkAuth, UserController.getMe)
 
+app.get('/posts', PostController.getAll)
+app.get('/posts/:id', PostController.getOne)
 app.post('/posts', checkAuth, postCreateValidator, PostController.create)
 
 app.listen(65534, (err) => {
