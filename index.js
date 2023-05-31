@@ -1,5 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
+import multer from 'multer'
 import {
   loginValidator,
   registerValidator,
@@ -16,6 +17,17 @@ mongoose
 
 const app = express()
 
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => {
+    cb(null, 'uploads')
+  },
+  filename: (_, file, cb) => {
+    cb(null, file.originalname)
+  },
+})
+
+const upload = multer({ storage })
+
 app.use(express.json())
 
 app.get('/', (req, res) => {
@@ -24,6 +36,12 @@ app.get('/', (req, res) => {
 
 app.post('/auth/login', loginValidator, UserController.login)
 app.post('/auth/register', registerValidator, UserController.register)
+
+app.post('/upload', upload.single('image'), (req, res) => {
+  res.json({
+    url: `/uploads/${req.file.originalname}`,
+  })
+})
 app.get('/auth/me', checkAuth, UserController.getMe)
 
 app.get('/posts', PostController.getAll)
