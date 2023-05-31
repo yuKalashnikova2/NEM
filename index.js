@@ -9,6 +9,7 @@ import {
 import checkAuth from './utils/checkAuth.js'
 import * as UserController from './controller/UserController.js'
 import * as PostController from './controller/PostController.js'
+import handleValidationErrors from './utils/handleValidationErrors.js'
 
 mongoose
   .connect('mongodb+srv://yulia:12345www@cluster0.lqi18gx.mongodb.net/blog')
@@ -35,8 +36,8 @@ app.get('/', (req, res) => {
   res.send('Домашняя страница')
 })
 
-app.post('/auth/login', loginValidator, UserController.login)
-app.post('/auth/register', registerValidator, UserController.register)
+app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login)
+app.post('/auth/register',  registerValidator,  handleValidationErrors, UserController.register)
 
 app.post('/upload', upload.single('image'), (req, res) => {
   res.json({
@@ -47,9 +48,9 @@ app.get('/auth/me', checkAuth, UserController.getMe)
 
 app.get('/posts', PostController.getAll)
 app.get('/posts/:id', PostController.getOne)
-app.post('/posts', checkAuth, postCreateValidator, PostController.create)
-app.delete('/posts/:id', PostController.remove)
-app.patch('/posts/:id', PostController.update)
+app.post('/posts', checkAuth, postCreateValidator, handleValidationErrors, PostController.create)
+app.delete('/posts/:id', checkAuth, PostController.remove)
+app.patch('/posts/:id', checkAuth, postCreateValidator, handleValidationErrors,PostController.update)
 
 app.listen(65534, (err) => {
   if (err) {
